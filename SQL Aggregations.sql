@@ -347,7 +347,7 @@ SELECT
 	CASE WHEN total >= 2000
 	THEN 'At Least 2000'
 	WHEN total < 2000
-    AND total >= 1000
+	AND total >= 1000
     THEN 'Between 1000 and 2000'
     ELSE 'Less than 1000'
     END AS qty_flag
@@ -359,7 +359,7 @@ SELECT
 	a.name AS account,
 	SUM(o.total_amt_usd) AS lifetime_value,
 	CASE WHEN SUM(o.total_amt_usd) > 200000
-    THEN 'high'
+	THEN 'high'
     WHEN SUM(o.total_amt_usd) BETWEEN 100000 AND 200000
     THEN 'medium'
     ELSE 'low'
