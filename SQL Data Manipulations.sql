@@ -1,9 +1,9 @@
 /*SQL Data Manipulation*/
 
 /*In the accounts table, there is a column holding the website for each company. The last three digits specify what type of web address they are using. Pull these extensions and provide how many of each website type exist in the accounts table.*/
-SELECT 
+SELECT
 	RIGHT(website, 3) AS website_type,
-    COUNT(*) 
+	COUNT(*) 
 FROM accounts
 GROUP BY 1;
 
@@ -11,43 +11,43 @@ GROUP BY 1;
 WITH t1 AS(
 	SELECT
 		name,
-	    CASE WHEN LEFT(UPPER(name),1) BETWEEN 'A' AND 'Z'
-	    THEN 1
-	    ELSE 0
-	    END AS letter,
-	    CASE WHEN LEFT(UPPER(name),1) NOT BETWEEN 'A' AND 'Z'
-	    THEN 1
-	    ELSE 0
-	    END AS number
+		CASE WHEN LEFT(UPPER(name),1) BETWEEN 'A' AND 'Z'
+		THEN 1
+		ELSE 0
+		END AS letter,
+		CASE WHEN LEFT(UPPER(name),1) NOT BETWEEN 'A' AND 'Z'
+		THEN 1
+		ELSE 0
+		END AS number
 	FROM accounts
 	)
-SELECT 
+SELECT
 	SUM(letter) AS letters,
-    SUM(number) AS numbers
+	SUM(number) AS numbers
 FROM t1;
 
 /*Consider vowels as a, e, i, o, and u. What proportion of company names start with a vowel, and what percent start with anything else?*/
 SELECT
-    CASE WHEN LEFT(UPPER(name),1) IN ('A', 'E', 'I','O', 'U')
-    THEN 'vowel'
-    ELSE 'non vowel' 
-    END AS label,
-    COUNT(*)
+	CASE WHEN LEFT(UPPER(name),1) IN ('A', 'E', 'I','O', 'U')
+	THEN 'vowel'
+	ELSE 'non vowel'
+	END AS label,
+	COUNT(*)
 FROM accounts
 GROUP BY 1;
 
 /*Use the accounts table to create first and last name columns that hold the first and last names for the primary_poc.*/
-SELECT 
-	primary_poc, 
+SELECT
+	primary_poc,
 	LEFT(primary_poc, STRPOS(primary_poc, ' ')-1) AS first_name,
-    SUBSTR(primary_poc, STRPOS(primary_poc, ' ')+1) AS last_name
+	SUBSTR(primary_poc, STRPOS(primary_poc, ' ')+1) AS last_name
 FROM accounts;
 
 /*Now see if you can do the same thing for every rep name in the sales_reps table. Again provide first and last name columns.*/
-SELECT 
+SELECT
 	name AS sales_rep,
-    LEFT(name, POSITION(' ' IN name)-1) AS first_name,
-    SUBSTR(name, POSITION(' ' IN name)+1) AS last_name
+	LEFT(name, POSITION(' ' IN name)-1) AS first_name,
+	SUBSTR(name, POSITION(' ' IN name)+1) AS last_name
 FROM sales_reps;
 
 /*Each company in the accounts table wants to create an email address for each primary_poc. The email address should be the first name of the primary_poc . last name primary_poc @ company name .com.*/
@@ -70,9 +70,9 @@ SELECT
 	LOWER(LEFT(primary_poc, 1))
 	|| LOWER(SUBSTR(primary_poc, STRPOS(primary_poc, ' ') - 1, 1))
 	|| LOWER(SUBSTR(primary_poc, STRPOS(primary_poc, ' ') + 1, 1))
-	|| LOWER(RIGHT(primary_poc, 1)) 
+	|| LOWER(RIGHT(primary_poc, 1))
 	|| STRPOS(primary_poc, ' ') - 1
-	|| LENGTH(primary_poc) - STRPOS(primary_poc, ' ') 
+	|| LENGTH(primary_poc) - STRPOS(primary_poc, ' ')
 	||UPPER(REPLACE(name, ' ', '')) AS password
 FROM accounts;
 
@@ -85,31 +85,31 @@ WITH t1 AS(
 		SUBSTR(date, 7, 4) AS year
 	FROM sf_crime_data
 	)
-SELECT 
+SELECT
 	CAST(CONCAT(year, '-', month, '-', day) AS DATE) AS formatted_date
 FROM t1;
 
 /*filling zeros instead of NULL values*/
 
-SELECT 
-    a.id,
-    a.name, 
-    a.website, 
-    a.lat, 
-    a.long, 
-    a.primary_poc, 
-    a.sales_rep_id, 
-    o.id AS ord_id, 
-    COALESCE(o.account_id, a.id) AS account_id, 
-    o.occurred_at, 
-    COALESCE(o.standard_qty, 0) AS standard_qty,
-    COALESCE(o.gloss_qty, 0) AS gloss_qty,
-    COALESCE(o.poster_qty, 0) AS poster_qty,
-    COALESCE(o.total, 0) AS total,
-    COALESCE(o.standard_amt_usd, 0) AS standard_amt_usd,
-    COALESCE(o.gloss_amt_usd, 0) AS gloss_amt_usd,
-    COALESCE(o.poster_amt_usd, 0) AS poster_amt_usd,
-    COALESCE(o.total_amt_usd, 0) AS total_amt_usd
+SELECT
+	a.id,
+	a.name,
+	a.website,
+	a.lat,
+	a.long,
+	a.primary_poc,
+	a.sales_rep_id,
+	o.id AS ord_id,
+	COALESCE(o.account_id, a.id) AS account_id,
+	o.occurred_at,
+	COALESCE(o.standard_qty, 0) AS standard_qty,
+	COALESCE(o.gloss_qty, 0) AS gloss_qty,
+	COALESCE(o.poster_qty, 0) AS poster_qty,
+	COALESCE(o.total, 0) AS total,
+	COALESCE(o.standard_amt_usd, 0) AS standard_amt_usd,
+	COALESCE(o.gloss_amt_usd, 0) AS gloss_amt_usd,
+	COALESCE(o.poster_amt_usd, 0) AS poster_amt_usd,
+	COALESCE(o.total_amt_usd, 0) AS total_amt_usd
 FROM accounts AS a
 LEFT JOIN orders AS o
 ON a.id = o.account_id
