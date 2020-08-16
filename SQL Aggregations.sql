@@ -348,9 +348,9 @@ SELECT
 	THEN 'At Least 2000'
 	WHEN total < 2000
 	AND total >= 1000
-    THEN 'Between 1000 and 2000'
-    ELSE 'Less than 1000'
-    END AS qty_flag
+	THEN 'Between 1000 and 2000'
+	ELSE 'Less than 1000'
+	END AS qty_flag
 FROM orders
 GROUP BY 2;
 
@@ -360,10 +360,10 @@ SELECT
 	SUM(o.total_amt_usd) AS lifetime_value,
 	CASE WHEN SUM(o.total_amt_usd) > 200000
 	THEN 'high'
-    WHEN SUM(o.total_amt_usd) BETWEEN 100000 AND 200000
-    THEN 'medium'
-    ELSE 'low'
-    END AS ltv_flag
+	WHEN SUM(o.total_amt_usd) BETWEEN 100000 AND 200000
+	THEN 'medium'
+	ELSE 'low'
+	END AS ltv_flag
 FROM orders AS o
 JOIN accounts AS a
 ON a.id = o.account_id
