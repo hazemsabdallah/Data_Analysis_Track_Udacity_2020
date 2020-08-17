@@ -5,7 +5,7 @@ SELECT
 	RIGHT(website, 3) AS website_type,
 	COUNT(*) 
 FROM accounts
-GROUP BY 1;
+GROUP BY website_type;
 
 /*Create two groups: one group of company names that start with a number and a second group of those company names that start with a letter. What proportion of company names start with a letter?*/
 WITH t1 AS(
@@ -34,7 +34,7 @@ SELECT
 	END AS label,
 	COUNT(*)
 FROM accounts
-GROUP BY 1;
+GROUP BY label;
 
 /*Use the accounts table to create first and last name columns that hold the first and last names for the primary_poc.*/
 SELECT
@@ -73,7 +73,7 @@ SELECT
 	|| LOWER(RIGHT(primary_poc, 1))
 	|| STRPOS(primary_poc, ' ') - 1
 	|| LENGTH(primary_poc) - STRPOS(primary_poc, ' ')
-	||UPPER(REPLACE(name, ' ', '')) AS password
+	|| UPPER(REPLACE(name, ' ', '')) AS password
 FROM accounts;
 
 /*A different database is used to convert an unformatted date into timestamp format.*/
