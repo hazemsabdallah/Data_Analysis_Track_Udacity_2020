@@ -31,7 +31,7 @@ t2 AS(
 	SELECT
 		total_amt_usd AS median
 	FROM orders
-	ORDER BY 1
+	ORDER BY median
 	LIMIT 2
 	OFFSET ((SELECT * FROM t1)/2)-1
 	),
@@ -44,7 +44,7 @@ t4 AS(
 	SELECT
 		total_amt_usd AS median
 	FROM orders
-	ORDER BY 1
+	ORDER BY median
 	LIMIT 1
 	OFFSET ((SELECT * FROM t1)/2)-1
 	)
@@ -97,7 +97,7 @@ SELECT
 	COUNT(*)
 FROM web_events
 GROUP BY channel
-ORDER BY 2 DESC;
+ORDER BY count DESC;
 
 /*Who was the primary contact associated with the earliest web_event?*/
 SELECT
@@ -115,8 +115,8 @@ SELECT
 FROM accounts AS a
 LEFT JOIN orders AS o
 ON a.id = o.account_id
-GROUP BY 1
-ORDER BY 2;
+GROUP BY account
+ORDER BY smallest_order;
 
 /*Find the number of sales reps in each region. Your final table should have two columns - the region and the number of sales_reps. Order from fewest reps to most reps.*/
 SELECT
@@ -125,7 +125,7 @@ SELECT
 FROM region AS r
 JOIN sales_reps AS s
 ON r.id = s.region_id
-GROUP BY 1;
+GROUP BY region;
 
 /*For each account, determine the average amount of each type of paper they purchased across their orders. Your result should have four columns - one for the account name and one for the average quantity purchased for each of the paper types for each account.*/
 SELECT
@@ -136,7 +136,7 @@ SELECT
 FROM accounts AS a
 LEFT JOIN orders AS o
 ON a.id = o.account_id
-GROUP BY 1;
+GROUP BY account;
 
 /*Determine the number of times a particular channel was used in the web_events table for each sales rep. Your final table should have three columns - the name of the sales rep, the channel, and the number of occurrences. Order your table with the highest number of occurrences first.*/
 SELECT
@@ -148,8 +148,8 @@ LEFT JOIN accounts AS a
 ON a.sales_rep_id = s.id
 JOIN web_events AS w
 ON w.account_id = a.id
-GROUP BY 2, 1
-ORDER BY 3 DESC;
+GROUP BY sales_rep, w.channel
+ORDER BY frequency DESC;
 
 /*Determine the number of times a particular channel was used in the web_events table for each region. Your final table should have three columns - the region name, the channel, and the number of occurrences. Order your table with the highest number of occurrences first.*/
 SELECT
@@ -163,8 +163,8 @@ FULL JOIN web_events AS w
 ON w.account_id = a.id
 FULL JOIN region AS r
 ON r.id = s.region_id
-GROUP BY 2, 1
-ORDER BY 3 DESC;
+GROUP BY region, w.channel
+ORDER BY frequency DESC;
 
 /*Have any sales reps worked on more than one account?*/
 SELECT
@@ -174,7 +174,7 @@ FROM sales_reps AS s
 LEFT JOIN accounts AS a
 ON s.id = a.sales_rep_id
 GROUP BY sales_rep
-ORDER BY 2 ASC;
+ORDER BY accounts_num ASC;
 
 /*How many of the sales reps have more than 5 accounts that they manage?*/
 WITH t1 AS(
@@ -196,7 +196,7 @@ SELECT
 FROM orders
 GROUP BY account_id
 HAVING COUNT(*) > 20
-ORDER BY 2;
+ORDER BY num_orders;
 
 /*Which account has the most orders?*/
 SELECT
@@ -205,8 +205,8 @@ SELECT
 FROM orders AS o
 JOIN accounts AS a
 ON o.account_id = a.id
-GROUP BY 1
-ORDER BY 2 DESC
+GROUP BY account
+ORDER BY num_orders DESC
 LIMIT 1;
 
 /*Which accounts spent more than 30,000 usd total across all orders?*/
@@ -216,9 +216,9 @@ SELECT
 FROM orders AS o
 JOIN accounts AS a
 ON o.account_id = a.id
-GROUP BY 1
+GROUP BY account
 HAVING SUM(o.total_amt_usd) > 30000
-ORDER BY 2 ASC;
+ORDER BY total_spent ASC;
 
 /*Which accounts spent less than 1,000 usd total across all orders?*/
 SELECT
@@ -228,7 +228,7 @@ SELECT
 FROM orders AS o
 RIGHT JOIN accounts AS a
 ON o.account_id = a.id
-GROUP BY 1, 2
+GROUP BY a.id, account
 HAVING SUM(o.total_amt_usd) < 1000
 OR SUM(o.total_amt_usd) IS NULL;
 
@@ -239,8 +239,8 @@ SELECT
 FROM orders AS o
 JOIN accounts AS a
 ON o.account_id = a.id
-GROUP BY 1
-ORDER BY 2 DESC
+GROUP BY account
+ORDER BY total_spent DESC
 LIMIT 1;
 
 /*Which accounts used facebook as a channel to contact customers more than 6 times?*/
@@ -252,9 +252,9 @@ FROM web_events AS w
 JOIN accounts AS a
 ON a.id = w.account_id
 WHERE channel = 'facebook'
-GROUP BY 1, 2
+GROUP BY account, w.channel
 HAVING COUNT(w.*) > 6
-ORDER by 3 DESC;
+ORDER by contact_freq DESC;
 
 /*Which channel was most frequently used by most accounts?*/
 WITH t1 AS(
@@ -267,8 +267,8 @@ SELECT
 	channel,
 	COUNT(*) AS account_usage
 FROM t1
-GROUP BY 1
-ORDER BY 2 DESC;
+GROUP BY channel
+ORDER BY account_usage DESC;
 
 
 
@@ -283,40 +283,40 @@ SELECT
 	DATE_TRUNC('year', occurred_at) AS year,
 	SUM(total_amt_usd) AS toatal_sales
 FROM orders AS o
-GROUP BY 1
-ORDER BY 1;
+GROUP BY year
+ORDER BY total_sales;
 
 /*Which month did Parch & Posey have the greatest sales in terms of total dollars? Are all months evenly represented by the dataset?*/
 SELECT
 	DATE_PART('month', occurred_at) AS month,
 	SUM(total_amt_usd) AS toatal_sales
 FROM orders AS o
-GROUP BY 1
-ORDER BY 2 DESC
+GROUP BY month
+ORDER BY total_sales DESC
 LIMIT 1;
 
 SELECT
 	DATE_PART('month', occurred_at) AS month,
 	COUNT(*) AS month_coverage
 FROM orders AS o
-GROUP BY 1
-ORDER BY 1;
+GROUP BY month
+ORDER BY month;
 
 SELECT
 	DATE_PART('month', occurred_at) AS month,
-	SUM(total_amt_usd) toatal_sales
+	SUM(total_amt_usd) total_sales
 FROM orders AS o
 WHERE DATE_PART('year', occurred_at) NOT IN (2013, 2017)
-GROUP BY 1
-ORDER BY 2 DESC;
+GROUP BY month
+ORDER BY total_sales DESC;
 
 /*Which year did Parch & Posey have the greatest sales in terms of total number of orders? Are all years evenly represented by the dataset?*/
 SELECT
 	DATE_TRUNC('year', occurred_at) AS year,
 	COUNT(*) AS num_orders
 FROM orders AS o
-GROUP BY 1
-ORDER BY 1;
+GROUP BY year
+ORDER BY year;
 
 /*In which month of which year did Walmart spend the most on gloss paper in terms of dollars?*/
 SELECT
@@ -327,8 +327,8 @@ FROM orders AS o
 JOIN accounts AS a
 ON a.id = o.account_id
 AND a.name = 'Walmart'
-GROUP BY 1, 2
-ORDER BY 3 DESC
+GROUP BY month, account
+ORDER BY gloss_sales_amt DESC
 LIMIT 1;
 
 
@@ -352,7 +352,7 @@ SELECT
 	ELSE 'Less than 1000'
 	END AS qty_flag
 FROM orders
-GROUP BY 2;
+GROUP BY qty_flag;
 
 /*We would like to understand 3 different levels of customers based on the amount associated with their purchases. The top level includes anyone with a Lifetime Value (total sales of all orders) greater than 200,000 usd. The second level is between 200,000 and 100,000 usd. The lowest level is anyone under 100,000 usd. Provide a table that includes the level associated with each account. You should provide the account name, the total sales of all orders for the customer, and the level. Order with the top spending customers listed first. Obtain the total amount spent by customers only in 2016 and 2017*/
 SELECT
@@ -368,8 +368,8 @@ FROM orders AS o
 JOIN accounts AS a
 ON a.id = o.account_id
 AND DATE_PART('year', o.occurred_at) IN (2016, 2017)
-GROUP BY 1
-ORDER BY 2 DESC;
+GROUP BY account
+ORDER BY lifetime_value DESC;
 
 /* We would like to identify top performing sales reps, which are sales reps associated with more than 200 orders or more than 750000 in total sales. The middle group has any rep with more than 150 orders or 500000 in sales. Create a table with the sales rep name, the total number of orders, total sales across all orders, and a column with top, middle, or low depending on this criteria. Place the top sales people based on dollar amount of sales first in your final table. You might see a few upset sales people by this criteria!*/
 SELECT
@@ -389,6 +389,6 @@ LEFT JOIN accounts AS a
 ON a.sales_rep_id = s.id
 JOIN orders AS o
 ON o.account_id = a.id
-GROUP BY 1
-ORDER BY 3 DESC;
+GROUP BY sales_rep
+ORDER BY performace DESC;
 
