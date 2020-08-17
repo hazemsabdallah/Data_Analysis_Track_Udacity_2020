@@ -86,7 +86,7 @@ JOIN orders AS o
 ON a.id = o.account_id
 AND o.standard_qty > 100
 AND o.poster_qty > 50
-ORDER BY 3 DESC;
+ORDER BY unit_price DESC;
 
 /*What are the different channels used by account id 1001? Your final table should have only 2 columns: account name and the different channels.*/
 SELECT DISTINCT
