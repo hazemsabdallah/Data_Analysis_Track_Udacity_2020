@@ -29,18 +29,18 @@ WHERE DATE_TRUNC('month', occurred_at) =
 /*Provide the name of the sales_rep in each region with the largest amount of total_amt_usd sales.*/
 WITH t1 AS(
 	SELECT
-     	r.name AS region,
-     	s.name AS sales_rep,
-     	SUM(o.total_amt_usd) AS total_sales
-     FROM sales_reps AS s
-     JOIN accounts AS a
-     ON a.sales_rep_id = s.id
-     JOIN orders AS o
-     ON o.account_id = a.id
-     JOIN region AS r
-     ON r.id = s.region_id
-     GROUP BY region, sales_rep
-     )
+		r.name AS region,
+		s.name AS sales_rep,
+		SUM(o.total_amt_usd) AS total_sales
+	FROM sales_reps AS s
+	JOIN accounts AS a
+	ON a.sales_rep_id = s.id
+	JOIN orders AS o
+	ON o.account_id = a.id
+	JOIN region AS r
+	ON r.id = s.region_id
+	GROUP BY region, sales_rep
+	)
 SELECT
 	*
 FROM t1
