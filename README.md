@@ -8,4 +8,3 @@ contains course provided contents for an imaginary company called Parch & Posey.
 
 Queries folder:
 contains performed queries divided into different files in accordance with their focus on type of SQL statements. Right at the beginning of every queries, a comment has been added to show what kind of insight it aims to provide.
-
