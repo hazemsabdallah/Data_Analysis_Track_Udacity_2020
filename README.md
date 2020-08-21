@@ -7,4 +7,4 @@ Database folder:
 contains course provided contents for an imaginary company called Parch & Posey. An SQL file for creating individual database tables along with their ERD schema are enclosed there.
 
 Queries folder:
-contains performed queries divided into different files in accordance with their focus on type of SQL statements. Right at the beginning of every queries, a comment has been added to show what kind of insight it aims to provide.
+contains performed queries divided into different files in accordance with their focus on type of SQL statements. Right at the beginning of every query, a comment has been added to show what kind of insight it aims to provide.
